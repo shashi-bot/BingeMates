@@ -1,0 +1,358 @@
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom, #2c3e50, #34495e);
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+body .dash_container{
+  
+
+    margin-top: 150px 
+}
+body .dashboard-container{
+    margin-top: 150px;
+}
+/* Containers */
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    height: 100vh;
+    padding: 20px;
+    background:  rgba(255, 255, 255, 0.1); 
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    font-family: 'Arial', sans-serif;
+}
+.dash_container {
+   
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    width: 350px;
+    text-align: center;
+    top: 50%;
+    font-family: 'Arial', sans-serif;
+  
+}
+
+/* Input Fields */
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 16px;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Buttons */
+.btn {
+    width: 90%;
+    padding: 12px;
+    background: linear-gradient(to right, #1abc9c, #16a085);
+    border: none;
+    color: white;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: linear-gradient(to right, #1abc9c, #16a085);
+}
+
+/* Dashboard Styles */
+.dashboard-container {
+    width: 80%;
+    max-width: 800px;
+    text-align: center;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.dashboard-buttons .btn {
+    width: 60%;
+}
+
+
+/* Video Section */
+.video-section {
+    width: 70%;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Adjusted Chat Section */
+.chat-container {
+    position: absolute;
+    right: 10px;
+    top: 10%;
+    width: 320px;
+    height: 80%;
+    background: linear-gradient(to bottom, #2c3e50, #34495e);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    max-width: 75%;
+    margin: 8px;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    word-wrap: break-word;
+    display: inline-block;
+    position: relative;
+}
+
+.sender {
+    background-color: #0b93f6;
+    color: white;
+    align-self: flex-end;
+    text-align: right;
+}
+
+.receiver {
+    background-color: #e5e5ea;
+    color: black;
+    align-self: flex-start;
+    text-align: left;
+}
+
+.sender::after {
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: 10px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid #0b93f6;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+
+.receiver::after {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 10px;
+    width: 0;
+    height: 0;
+    border-right: 10px solid #e5e5ea;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+    margin-right: 10px;
+}
+
+.chat-input button {
+    background: linear-gradient(to right, #1abc9c, #16a085);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+
+/* Headings */
+h2 {
+    font-size: 26px;
+    margin-bottom: 10px;
+    background: -webkit-linear-gradient(left, #ff9a9e, #fad0c4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+h3 {
+    font-size: 22px;
+    margin-top: 20px;
+}
+
+/* Input Fields */
+input[type="text"], input[type="password"] {
+    width: 80%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    margin: 10px 0;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-align: center;
+}
+
+input::placeholder {
+    color: #ddd;
+}
+
+/* Buttons */
+button {
+    background: linear-gradient(to right, #1abc9c, #16a085);
+    border: none;
+    padding: 12px 18px;
+    font-size: 16px;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 10px 5px;
+}
+
+button:hover {
+    background: linear-gradient(to right, #1abc9c, #16a085);
+    transform: scale(1.05);
+}
+
+/* Video Player */
+#player {
+    width: 100%;
+    max-width: 640px;
+    height: 360px;
+    margin: 20px auto;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* User List */
+.users-container {
+    width: 100%;
+    margin-top: 15px;
+    background: rgba(255, 255, 255, 0.1); 
+    padding: 10px;
+    border-radius: 8px;
+    overflow-y: auto;
+    max-height: 200px; /* Ensuring it does not exceed screen */
+    
+}
+
+/* User List Items */
+.user-item {
+    list-style: cicle;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 5px 0;
+    text-align: left;
+    
+}
+
+#leaveBtn {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#leaveBtn:hover {
+    background-color: darkred;
+}
+
+/* Forms */
+.form-container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    width: 80%;
+    max-width: 400px;
+    margin: auto;
+}
+
+.form-container h2 {
+    margin-bottom: 15px;
+}
+
+.form-container input {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+}
+.btn {
+    display: inline-block;
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+    background: linear-gradient(to right, #1abc9c, #16a085);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    text-decoration: none;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.btn:hover {
+    background: linear-gradient(to right, #1abc9c, #16a085);
+    transform: scale(1.05);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.btn:active {
+    transform: scale(0.98);
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    input[type="text"], input[type="password"], button {
+        width: 90%;
+    }
+}

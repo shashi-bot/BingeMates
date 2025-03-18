@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Together - Room {{ room_code }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+</head>
+<body>
+    <div class="container">
+    <div class="video-section">
+        <h2>Welcome {{ username }} </h2>
+
+        <input type="text" id="video-url" placeholder="Paste YouTube link here">
+        <button onclick="loadVideo()">Load Video</button>
+
+        <div id="player"></div>
+
+        <button id="playBtn" onclick="playVideo()">▶ Play</button>
+        <button id="pauseBtn" onclick="pauseVideo()">⏸ Pause</button>
+        <div class="users-container">
+            <h3>Users in Room: {{room_code}}</h3>
+            <ul class="user-item" id="user-item"></ul>
+            <button id="leaveBtn" onclick="leaveRoom()">🚪 Leave Room</button>
+        </div>
+    </div>
+
+    
+    <!-- Chat Section -->
+    <div class="chat-container">
+        <h2>Chat</h2>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input">
+            <input type="text" id="chat-message" placeholder="Type a message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    
+</div>
+    <script>
+        var socket = io.connect("http://127.0.0.1:5000");
+        let player;
+        let roomCode = "{{ room_code }}";
+        let username = "{{ username }}";
+
+        // Join room when user enters
+        socket.emit('join', { room_code: roomCode, username: username });
+
+        socket.on('update_users', function(data) {
+            let userList = document.getElementById("user-item");
+            userList.innerHTML = "";
+            data.users.forEach(user => {
+                let li = document.createElement("li");
+                li.innerText = user;
+                userList.appendChild(li);
+            });
+        });
+        function leaveRoom() {
+        socket.emit('leave', { room_code: roomCode, username: username });
+
+        // Clear session storage to prevent going back
+        sessionStorage.clear();
+
+        // Redirect to dashboard
+        window.location.href = "/dashboard";
+
+        // Prevent going back
+        window.history.pushState(null, "", "/dashboard");
+    }
+
+    function preventBack() {
+        window.history.pushState(null, "", window.location.href);
+        window.onpopstate = function () {
+            window.history.pushState(null, "", window.location.href);
+        };
+    }
+
+    // Apply prevent back functionality
+    preventBack();
+
+        socket.on('remove_user', function(data) {
+            let userList = document.getElementById("user-item");
+            userList.innerHTML = "";
+            data.users.forEach(user => {
+                let li = document.createElement("li");
+                li.classList.add("user-item");
+                li.innerText = user;
+                userList.appendChild(li);
+            });
+        });
+        function sendMessage() {
+        let messageInput = document.getElementById("chat-message");
+        let message = messageInput.value.trim();
+
+        if (message !== "") {
+            socket.emit("chat_message", { room_code: roomCode, username: username, message: message });
+            messageInput.value = "";
+        }
+    }
+
+    socket.on("receive_message", function (data) {
+        let chatMessages = document.getElementById("chat-messages");
+        let messageDiv = document.createElement("div");
+
+        messageDiv.classList.add("message");
+        if (data.username === username) {
+            messageDiv.classList.add("sender");
+        } else {
+            messageDiv.classList.add("receiver");
+        }
+
+        messageDiv.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+        function loadVideo() {
+            let videoUrl = document.getElementById("video-url").value;
+            let videoId = extractVideoID(videoUrl);
+
+            if (videoId) {
+                socket.emit('video_update', { room_code: roomCode, video_id: videoId });
+            } else {
+                alert("Invalid YouTube URL");
+            }
+        }
+
+        function extractVideoID(url) {
+            let match = url.match(/[?&]v=([^&]+)/);
+            return match ? match[1] : null;
+        }
+
+        socket.on('sync_video', function(data) {
+            if (player) {
+                player.loadVideoById(data.video_id);
+            } else {
+                createPlayer(data.video_id);
+            }
+        });
+
+        function createPlayer(videoId) {
+            player = new YT.Player('player', {
+                height: '390',
+                width: '640',
+                videoId: videoId,
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            console.log("YouTube Player Ready");
+        }
+
+        function onPlayerStateChange(event) {
+            let state = event.data;
+            if (state === 1 || state === 2) {
+                socket.emit('video_control', { room_code: roomCode, state: state });
+            }
+        }
+
+        socket.on('sync_control', function(data) {
+            if (data.state === 1) player.playVideo();
+            else if (data.state === 2) player.pauseVideo();
+        });
+
+        function playVideo() {
+            player.playVideo();
+            socket.emit('video_control', { room_code: roomCode, state: 1 });
+        }
+
+        function pauseVideo() {
+            player.pauseVideo();
+            socket.emit('video_control', { room_code: roomCode, state: 2 });
+        }
+    </script>
+</body>
+</html>

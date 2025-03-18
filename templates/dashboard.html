@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h2>Welcome, {{ username }}</h2>
+        <div class="dashboard-buttons">
+            <form action="{{ url_for('create_room') }}" method="post">
+                <button type="submit" class="btn">Create Room</button>
+            </form>
+            <form action="{{ url_for('join_existing_room') }}" method="post">
+                <input type="text" name="room_code" placeholder="Enter Room Code">
+                <button type="submit" class="btn">Join Room</button>
+            </form>
+           
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+    </div>
+</body>
+<script>
+    function logoutUser() {
+        sessionStorage.clear();  // Clear session storage
+        window.location.href = "/logout";  // Redirect to logout
+
+        // Prevent back navigation
+        window.history.pushState(null, "", "/logout");
+    }
+
+    preventBack();  // Call function to prevent back
+</script>
+
+</html>
