@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_socketio import SocketIO, join_room, leave_room, emit
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -190,4 +193,5 @@ def handle_chat_message(data):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    port = int(os.environ.get("PORT", 8080))
+    socketio.run(app, host='0.0.0.0', port=port)
