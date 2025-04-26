@@ -7,11 +7,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://meet.jit.si/external_api.js"></script> <!-- Jitsi script -->
 </head>
 <body>
-    <div class="container">
+
+<div class="container">
+
+    <!-- Left Main Content (YouTube Player and Controls) -->
     <div class="video-section">
-        <h2>Welcome {{ username }} </h2>
+        <h2>Welcome {{ username }}</h2>
 
         <input type="text" id="video-url" placeholder="Paste YouTube link here">
         <button onclick="loadVideo()">Load Video</button>
@@ -20,24 +24,36 @@
 
         <button id="playBtn" onclick="playVideo()">▶ Play</button>
         <button id="pauseBtn" onclick="pauseVideo()">⏸ Pause</button>
+
         <div class="users-container">
-            <h3>Users in Room: {{room_code}}</h3>
-            <ul class="user-item" id="user-item"></ul>
+            <h3>Users in Room: {{ room_code }}</h3>
+            <ul id="user-item"></ul>
             <button id="leaveBtn" onclick="leaveRoom()">🚪 Leave Room</button>
         </div>
     </div>
 
-    
-    <!-- Chat Section -->
-    <div class="chat-container">
-        <h2>Chat</h2>
-        <div class="chat-messages" id="chat-messages"></div>
-        <div class="chat-input">
-            <input type="text" id="chat-message" placeholder="Type a message..." />
-            <button onclick="sendMessage()">Send</button>
+    <!-- Right Sidebar (Video Call + Chat) -->
+    <div class="right-sidebar">
+        
+        <!-- Video Call Section -->
+        <div class="video-call-container">
+            <h2>Live Video Call</h2>
+            <button id="join-call-btn" onclick="joinVideoCall()">📹 Join Call</button>
+            <div id="video-grid" style="margin-top: 10px;"></div>
         </div>
+
+        <!-- Chat Section -->
+        <div class="chat-container">
+            <h2>Chat</h2>
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input">
+                <input type="text" id="chat-message" placeholder="Type a message...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
     </div>
-    
+
 </div>
     <script>
         var socket = io.connect("https://web-production-6534.up.railway.app");
@@ -45,137 +61,178 @@
         let roomCode = "{{ room_code }}";
         let username = "{{ username }}";
 
-        // Join room when user enters
-        socket.emit('join', { room_code: roomCode, username: username });
+// Join socket room
+socket.emit('join', { room_code: roomCode, username: username });
 
-        socket.on('update_users', function(data) {
-            let userList = document.getElementById("user-item");
-            userList.innerHTML = "";
-            data.users.forEach(user => {
-                let li = document.createElement("li");
-                li.innerText = user;
-                userList.appendChild(li);
-            });
-        });
-        function leaveRoom() {
-        socket.emit('leave', { room_code: roomCode, username: username });
-
-        // Clear session storage to prevent going back
-        sessionStorage.clear();
-
-        // Redirect to dashboard
-        window.location.href = "/dashboard";
-
-        // Prevent going back
-        window.history.pushState(null, "", "/dashboard");
-    }
-
-    function preventBack() {
-        window.history.pushState(null, "", window.location.href);
-        window.onpopstate = function () {
-            window.history.pushState(null, "", window.location.href);
-        };
-    }
-
-    // Apply prevent back functionality
-    preventBack();
-
-        socket.on('remove_user', function(data) {
-            let userList = document.getElementById("user-item");
-            userList.innerHTML = "";
-            data.users.forEach(user => {
-                let li = document.createElement("li");
-                li.classList.add("user-item");
-                li.innerText = user;
-                userList.appendChild(li);
-            });
-        });
-        function sendMessage() {
-        let messageInput = document.getElementById("chat-message");
-        let message = messageInput.value.trim();
-
-        if (message !== "") {
-            socket.emit("chat_message", { room_code: roomCode, username: username, message: message });
-            messageInput.value = "";
-        }
-    }
-
-    socket.on("receive_message", function (data) {
-        let chatMessages = document.getElementById("chat-messages");
-        let messageDiv = document.createElement("div");
-
-        messageDiv.classList.add("message");
-        if (data.username === username) {
-            messageDiv.classList.add("sender");
-        } else {
-            messageDiv.classList.add("receiver");
-        }
-
-        messageDiv.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+// Update user list
+socket.on('update_users', function(data) {
+    let userList = document.getElementById("user-item");
+    userList.innerHTML = "";
+    data.users.forEach(user => {
+        let li = document.createElement("li");
+        li.innerText = user;
+        userList.appendChild(li);
     });
-        function loadVideo() {
-            let videoUrl = document.getElementById("video-url").value;
-            let videoId = extractVideoID(videoUrl);
+});
 
-            if (videoId) {
-                socket.emit('video_update', { room_code: roomCode, video_id: videoId });
-            } else {
-                alert("Invalid YouTube URL");
-            }
+// Leave Room
+function leaveRoom() {
+    socket.emit('leave', { room_code: roomCode, username: username });
+    sessionStorage.clear();
+    window.location.href = "/dashboard";
+    window.history.pushState(null, "", "/dashboard");
+}
+
+// Remove User
+socket.on('remove_user', function(data) {
+    let userList = document.getElementById("user-item");
+    userList.innerHTML = "";
+    data.users.forEach(user => {
+        let li = document.createElement("li");
+        li.innerText = user;
+        userList.appendChild(li);
+    });
+});
+
+// Send Chat Message
+function sendMessage() {
+    let messageInput = document.getElementById("chat-message");
+    let message = messageInput.value.trim();
+    if (message !== "") {
+        socket.emit("chat_message", { room_code: roomCode, username: username, message: message });
+        messageInput.value = "";
+    }
+}
+
+// Receive Chat Message
+socket.on("receive_message", function (data) {
+    let chatMessages = document.getElementById("chat-messages");
+    let messageDiv = document.createElement("div");
+    messageDiv.classList.add("message");
+    if (data.username === username) {
+        messageDiv.classList.add("sender");
+    } else {
+        messageDiv.classList.add("receiver");
+    }
+    messageDiv.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+
+// Load YouTube Video
+function loadVideo() {
+    let videoUrl = document.getElementById("video-url").value;
+    let videoId = extractVideoID(videoUrl);
+    if (videoId) {
+        socket.emit('video_update', { room_code: roomCode, video_id: videoId });
+    } else {
+        alert("Invalid YouTube URL");
+    }
+}
+
+// Extract YouTube Video ID
+function extractVideoID(url) {
+    let match = url.match(/[?&]v=([^&]+)/);
+    return match ? match[1] : null;
+}
+
+// Sync Video
+socket.on('sync_video', function(data) {
+    if (player) {
+        player.loadVideoById(data.video_id);
+    } else {
+        createPlayer(data.video_id);
+    }
+});
+
+// Create YouTube Player
+function createPlayer(videoId) {
+    player = new YT.Player('player', {
+        height: '390',
+        width: '640',
+        videoId: videoId,
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
         }
+    });
+}
 
-        function extractVideoID(url) {
-            let match = url.match(/[?&]v=([^&]+)/);
-            return match ? match[1] : null;
+// YouTube Player Ready
+function onPlayerReady(event) {
+    console.log("YouTube Player Ready");
+}
+
+// YouTube Player State Change
+function onPlayerStateChange(event) {
+    let state = event.data;
+    if (state === 1 || state === 2) {
+        socket.emit('video_control', { room_code: roomCode, state: state });
+    }
+}
+
+// Sync Play/Pause
+socket.on('sync_control', function(data) {
+    if (data.state === 1) player.playVideo();
+    else if (data.state === 2) player.pauseVideo();
+});
+
+// Play Video
+function playVideo() {
+    player.playVideo();
+    socket.emit('video_control', { room_code: roomCode, state: 1 });
+}
+
+// Pause Video
+function pauseVideo() {
+    player.pauseVideo();
+    socket.emit('video_control', { room_code: roomCode, state: 2 });
+}
+
+// Join Video Call
+function joinVideoCall() {
+    const domain = "8x8.vc";
+    const appID = "{{ app_id }}";
+    const roomName = appID + "/WatchTogether_" + roomCode;
+    const options = {
+        roomName: roomName,
+        width: "100%",
+        height: 420,
+        parentNode: document.getElementById("video-grid"),
+        userInfo: {
+            displayName: username
+        },
+        configOverwrite: {
+            startWithAudioMuted: false,
+            startWithVideoMuted: false,
+            disableDeepLinking: true,
+            disableSelfView: false,
+        },
+        interfaceConfigOverwrite: {
+            SHOW_JITSI_WATERMARK: false,
+            SHOW_WATERMARK_FOR_GUESTS: false,
+            SHOW_BRAND_WATERMARK: false,
+            TOOLBAR_BUTTONS: [
+                'microphone', 'camera', 'hangup', 'tileview'
+            ],
+            TILE_VIEW_MAX_COLUMNS: 2,
+            FILM_STRIP_ONLY: false,
+            DISABLE_VIDEO_BACKGROUND: true,
+            LOCAL_THUMBNAIL_RATIO: 1,
+            REMOTE_THUMBNAIL_RATIO: 1,
+            DEFAULT_REMOTE_DISPLAY_NAME: 'Friend',
+            DEFAULT_LOCAL_DISPLAY_NAME: username,
         }
+    };
+    const api = new JitsiMeetExternalAPI(domain, options);
 
-        socket.on('sync_video', function(data) {
-            if (player) {
-                player.loadVideoById(data.video_id);
-            } else {
-                createPlayer(data.video_id);
-            }
-        });
+    api.addEventListener('videoConferenceJoined', () => {
+        api.executeCommand('toggleTileView');
+        api.executeCommand('setTileView', true);
+        api.executeCommand('toggleSelfView');
+    });
+}
+</script>
 
-        function createPlayer(videoId) {
-            player = new YT.Player('player', {
-                height: '390',
-                width: '640',
-                videoId: videoId,
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            console.log("YouTube Player Ready");
-        }
-
-        function onPlayerStateChange(event) {
-            let state = event.data;
-            if (state === 1 || state === 2) {
-                socket.emit('video_control', { room_code: roomCode, state: state });
-            }
-        }
-
-        socket.on('sync_control', function(data) {
-            if (data.state === 1) player.playVideo();
-            else if (data.state === 2) player.pauseVideo();
-        });
-
-        function playVideo() {
-            player.playVideo();
-            socket.emit('video_control', { room_code: roomCode, state: 1 });
-        }
-
-        function pauseVideo() {
-            player.pauseVideo();
-            socket.emit('video_control', { room_code: roomCode, state: 2 });
-        }
-    </script>
 </body>
 </html>

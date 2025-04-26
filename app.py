@@ -10,6 +10,8 @@ from bson.objectid import ObjectId
 import random
 import string
 import os
+
+
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
@@ -18,6 +20,8 @@ load_dotenv()
 # Get credentials from environment variables
 MONGO_URI = os.getenv('MONGO_URI')
 SECRET_KEY = os.getenv('SECRET_KEY')
+VPASS_APP_ID = os.getenv('VPASS_APP_ID')
+
 
 
 app = Flask(__name__)
@@ -106,7 +110,8 @@ def room_view(room_code):
     if not room:
         flash('Room not found', 'danger')
         return redirect(url_for('dashboard'))
-    return render_template('room.html', room_code=room_code, username=current_user.username)
+    return render_template('room.html', room_code=room_code, username=current_user.username, app_id=VPASS_APP_ID)
+
 
 @app.route('/logout')
 @login_required
@@ -189,6 +194,9 @@ def handle_leave(data):
 @socketio.on('chat_message')
 def handle_chat_message(data):
     emit('receive_message', data, room=data['room_code'])
+
+
+
 
 
 

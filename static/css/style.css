@@ -19,18 +19,27 @@ body .dashboard-container{
     margin-top: 150px;
 }
 /* Containers */
-
 .container {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     width: 100%;
     height: 100vh;
-    padding: 20px;
-    background:  rgba(255, 255, 255, 0.1); 
+    padding: 20px 10px 20px 10px; /* Top, Right, Bottom, Left */
+    background: rgba(255, 255, 255, 0.1);
     color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     font-family: 'Arial', sans-serif;
+    box-sizing: border-box; /* Important */
+}
+
+.video-section {
+    flex: 1; /* 🔥 Stretch main video area automatically */
+    margin-right: 20px; /* Gap between left and right sidebar */
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 .dash_container {
    
@@ -102,28 +111,9 @@ input::placeholder {
 
 
 /* Video Section */
-.video-section {
-    width: 70%;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
 
 /* Adjusted Chat Section */
-.chat-container {
-    position: absolute;
-    right: 10px;
-    top: 10%;
-    width: 320px;
-    height: 80%;
-    background: linear-gradient(to bottom, #2c3e50, #34495e);
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-}
+
 
 .chat-messages {
     flex: 1;
@@ -348,6 +338,44 @@ button:hover {
 .btn:active {
     transform: scale(0.98);
     box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
+}
+/* Video Call Container Fix */
+.video-call-container {
+    width: 100%;
+    height: 480px; /* ✅ good height for 2 people */
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+#video-grid {
+    width: 100%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chat-container {
+    width: 100%;
+    height: 270px; /* ✅ new height, below video */
+    background: linear-gradient(to bottom, #2c3e50, #34495e);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+.right-sidebar {
+    width: 550px; /* ✅ Sidebar fixed width */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 /* Responsive Design */
