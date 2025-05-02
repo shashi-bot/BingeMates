@@ -2,7 +2,7 @@
 
 ## About
 
-**BingeMates** is a real-time streaming, video call, and chat application that enables users to create or join virtual rooms for synchronized video playback. It allows users to watch videos together, engage in live video calls, and chat in real time, offering a shared digital viewing experience.
+**BingeMates** is a real-time streaming and communication platform that enables users to create or join virtual rooms for synchronized video playback. It supports live video conferencing and chat, allowing users to watch content together while communicating seamlessly in real time.
 
 ---
 
@@ -10,36 +10,35 @@
 
 - **Backend**: Python (Flask), WebSockets (Flask-SocketIO), MongoDB
 - **Frontend**: HTML, CSS, JavaScript
-- **Video Calls**: WebRTC
+- **Video Conferencing**: Jitsi Meet API
 
 ---
 
 ## Features
 
 - **Synchronized Video Playback**  
-  Watch videos simultaneously with others in a shared virtual room.
+  Watch videos in perfect sync with others in a shared virtual room.
 
-- **Live Video Calling**  
-  Built-in video conferencing using WebRTC for real-time face-to-face interaction.
+- **Live Video Calling (Jitsi Integration)**  
+  Join face-to-face video calls within rooms using the Jitsi Meet embedded API.
 
 - **Real-Time Chat**  
-  Integrated chat system powered by WebSockets for instant messaging during sessions.
+  Built-in messaging system powered by WebSockets for group communication during sessions.
 
-- **Responsive Design**  
-  Optimized interface that works seamlessly across desktop and mobile devices.
+- **Responsive User Interface**  
+  Fully responsive layout optimized for both desktop and mobile devices.
 
 ---
 
 ## Installation
 
-To set up the project locally:
+To run the application locally:
 
 ```bash
 git clone https://github.com/shashi-bot/BingeMates.git
 cd BingeMates
 pip install -r requirements.txt
 python app.py
-
 ```
 ##  Usage  
 1. Run the server  
