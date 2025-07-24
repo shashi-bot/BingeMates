@@ -82,13 +82,20 @@ io.on("connection", (socket) => {
 
 
 
-  const throttledSeek = throttle((roomId, time, sourceId) => {
-    io.to(roomId).emit("video-control", { action: "seek", time, sourceId });
+
+  const throttledSeek = throttle(({ roomId, time, sourceId }) => {
+    io.to(roomId)
+      .except(sourceId)          // <-- skip sender
+      .emit("video-control", { action: "seek", time, sourceId });
   }, 500, { leading: true, trailing: false });
   
   socket.on("video-control", ({ roomId, action, time, sourceId }) => {
-    if (action === "seek") return throttledSeek(roomId, time, sourceId);
-    io.to(roomId).emit("video-control", { action, time, sourceId });
+    if (action === "seek") {
+      throttledSeek({ roomId, time, sourceId });
+    } else {
+      // play / pause: also skip sender
+      io.to(roomId).except(sourceId).emit("video-control", { action, time, sourceId });
+    }
   });
 //   socket.on("participant-joined", ({ roomId, displayName }) => {
 //     if (!displayName) return; //  ignore undefined / empty displayName
