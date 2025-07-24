@@ -48,8 +48,9 @@ const Room = () => {
       createYouTubePlayer(id);
     });
 
-    socket.on("video-control", ({ action, time }) => {
+    socket.on("video-control", ({ action, time ,sourceId}) => {
       if (!ytPlayerRef.current?.getPlayerState) return;
+      if (sourceId === socketRef.current.id) return; 
       const player = ytPlayerRef.current;
       try {
         if (action === "play") {
@@ -161,17 +162,20 @@ const Room = () => {
           },
           onStateChange: (e) => {
             const state = e.data;
+            const sourceId = socketRef.current.id;
             if (state === window.YT.PlayerState.PLAYING) {
               socketRef.current.emit("video-control", {
                 roomId,
                 action: "play",
                 time: e.target.getCurrentTime(),
+                sourceId,
               });
             } else if (state === window.YT.PlayerState.PAUSED) {
               socketRef.current.emit("video-control", {
                 roomId,
                 action: "pause",
                 time: e.target.getCurrentTime(),
+                sourceId,
               });
             }
           },

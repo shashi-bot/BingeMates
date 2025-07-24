@@ -80,8 +80,8 @@ io.on("connection", (socket) => {
     io.to(roomId).emit("video-change", videoId);
   });
 
-  socket.on("video-control", ({ roomId, action, time }) => {
-    io.to(roomId).emit("video-control", { action, time });
+  socket.on("video-control", ({ roomId, action, time,sourceId }) => {
+    io.to(roomId).emit("video-control", { action, time, sourceId });
   });
 
 //   socket.on("participant-joined", ({ roomId, displayName }) => {
