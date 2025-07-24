@@ -44,7 +44,7 @@ A real-time video watching and chatting platform built with React, Node.js, Sock
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/bingemates.git
+   git clone https://github.com/shashi-bot/BingeMates.git
    cd bingemates
    ```
 2. Install backend dependencies:
