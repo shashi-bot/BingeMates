@@ -6,7 +6,7 @@ import session from "express-session";
 import passport from "passport";
 import http from "http";
 import { Server } from "socket.io";
-
+import throttle from "lodash/throttle.js";
 
 import "./config/passport.js"; // Google strategy
 import authRoutes from "./routes/auth.js";
@@ -80,10 +80,16 @@ io.on("connection", (socket) => {
     io.to(roomId).emit("video-change", videoId);
   });
 
-  socket.on("video-control", ({ roomId, action, time,sourceId }) => {
+
+
+  const throttledSeek = throttle((roomId, time, sourceId) => {
+    io.to(roomId).emit("video-control", { action: "seek", time, sourceId });
+  }, 500, { leading: true, trailing: false });
+  
+  socket.on("video-control", ({ roomId, action, time, sourceId }) => {
+    if (action === "seek") return throttledSeek(roomId, time, sourceId);
     io.to(roomId).emit("video-control", { action, time, sourceId });
   });
-
 //   socket.on("participant-joined", ({ roomId, displayName }) => {
 //     if (!displayName) return; //  ignore undefined / empty displayName
 //     io.to(roomId).emit("participant-joined", { displayName });

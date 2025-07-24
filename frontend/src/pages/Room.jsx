@@ -47,26 +47,21 @@ const Room = () => {
       setVideoId(id);
       createYouTubePlayer(id);
     });
+    const SYNC_THRESHOLD = 5; // seconds
 
-    socket.on("video-control", ({ action, time ,sourceId}) => {
-      if (!ytPlayerRef.current?.getPlayerState) return;
-      if (sourceId === socketRef.current.id) return; 
+    socket.on("video-control", ({ action, time, sourceId }) => {
+      if (sourceId === socketRef.current.id) return;
       const player = ytPlayerRef.current;
-      try {
-        if (action === "play") {
-          player.playVideo();
-          if (time !== undefined) player.seekTo(time, true);
-        } else if (action === "pause") {
-          player.pauseVideo();
-          if (time !== undefined) player.seekTo(time, true);
-        } else if (action === "seek" && time !== undefined) {
-          player.seekTo(time, true);
-        }
-      } catch (e) {
-        console.error("Error controlling video:", e);
+      if (!player) return;
+      const diff = Math.abs(player.getCurrentTime() - time);
+      if (diff <= SYNC_THRESHOLD) return; // ignore small drift
+      switch (action) {
+        case "play": player.playVideo(); player.seekTo(time, true); break;
+        case "pause": player.pauseVideo(); player.seekTo(time, true); break;
+        case "seek": player.seekTo(time, true); break;
+        default: break;
       }
     });
-
     return () => {
       socket.emit("leave-room", roomId);
       socket.disconnect();
